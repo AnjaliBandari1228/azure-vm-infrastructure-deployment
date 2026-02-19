@@ -16,10 +16,91 @@
   },
   "resources": [
     {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2022-07-01",
+      "name": "anjaliVNet",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": ["10.0.0.0/16"]
+        },
+        "subnets": [
+          {
+            "name": "anjaliSubnet",
+            "properties": {
+              "addressPrefix": "10.0.1.0/24"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2022-07-01",
+      "name": "anjaliPublicIP",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2022-07-01",
+      "name": "anjaliNSG",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AllowSSH",
+            "properties": {
+              "priority": 1000,
+              "protocol": "Tcp",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "22"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-07-01",
+      "name": "anjaliNIC",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "anjaliVNet",
+        "anjaliPublicIP",
+        "anjaliNSG"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'anjaliVNet', 'anjaliSubnet')]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'anjaliPublicIP')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'anjaliNSG')]"
+        }
+      }
+    },
+    {
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2022-03-01",
+      "apiVersion": "2022-08-01",
       "name": "[parameters('vmName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": ["anjaliNIC"],
       "properties": {
         "hardwareProfile": {
           "vmSize": "Standard_B1s"
@@ -41,7 +122,11 @@
           }
         },
         "networkProfile": {
-          "networkInterfaces": []
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'anjaliNIC')]"
+            }
+          ]
         }
       }
     }
