@@ -2,6 +2,17 @@
 Azure Virtual Machine Infrastructure Deployment using ARM Templates
 # Azure VM Infrastructure Deployment using ARM Template
 
+This project demonstrates Infrastructure as Code (IaC) by deploying a production-ready Azure Virtual Machine environment using ARM Templates including:
+
+- Virtual Network
+- Subnet
+- Network Security Group
+- Public IP
+- Network Interface
+- Windows/Linux Virtual Machine
+
+# Azure VM Infrastructure Deployment using ARM Template
+
 ## 📌 Project Overview
 
 This project demonstrates Infrastructure as Code (IaC) by deploying an Azure Virtual Machine using an ARM template.
@@ -21,6 +32,9 @@ The deployment includes:
 - ARM Templates (JSON)
 - Azure Resource Manager
 - Infrastructure as Code (IaC)
+- Azure Virtual Network
+- Network Security Group
+- Public IP
 
 ---
 
